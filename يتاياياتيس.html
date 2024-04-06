@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الأسماء والأرقام</title>
+    <style>
+        /* تخصيص تنسيق النموذج والقائمة */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        form label {
+            margin-bottom: 5px;
+        }
+        form input, form textarea {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 200px;
+        }
+        form input[type="file"] {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 20px;
+        }
+        a#buttonLink {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>قائمة الأسماء والأرقام</h1>
+
+    <!-- قائمة بالأسماء والأرقام -->
+    <ul id="myList">
+        <!-- يمكن إدراج العناصر هنا -->
+    </ul>
+
+    <!-- نموذج لإضافة عنصر جديد -->
+    <form id="myForm">
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="number">الرقم:</label>
+        <input type="text" id="number" name="number" required><br>
+        <label for="specification">المواصفات:</label><br>
+        <textarea id="specification" name="specification" maxlength="100" required></textarea><br>
+        <label for="link">الرابط:</label><br>
+        <input type="text" id="link" name="link"><br>
+        <label for="image">الصورة:</label><br>
+        <input type="file" id="image" name="image" accept="image/*"><br>
+        <button type="submit">إضافة</button>
+    </form>
+
+    <!-- زر الانتقال -->
+    <a id="buttonLink" href="الصفحة_المقصودة.html">المصمم عبدو المساعد شات جيبيتي</a>
+
+    <script>
+        // تحديد القائمة
+        const myList = document.getElementById("myList");
+        // تحديد نموذج الإضافة
+        const myForm = document.getElementById("myForm");
+
+        // تعريف دالة لإضافة عنصر جديد إلى القائمة
+        function addItem(name, number, specification, link, image) {
+            const listItem = document.createElement("li");
+            // إنشاء عنصر الرابط
+            const anchor = document.createElement("a");
+            anchor.href = link;
+            anchor.textContent = `${name}: ${number} (${specification})`;
+            listItem.appendChild(anchor);
+            // إنشاء عنصر الصورة
+            if (image) {
+                const img = document.createElement("img");
+                img.src = image;
+                listItem.appendChild(img);
+            }
+            myList.appendChild(listItem);
+
+            // إضافة زرين للتعديل والحذف
+            const editButton = document.createElement("button");
+            editButton.textContent = "تعديل";
+            editButton.addEventListener("click", () => editItem(listItem));
+            listItem.appendChild(editButton);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "حذف";
+            deleteButton.addEventListener("click", () => deleteItem(listItem));
+            listItem.appendChild(deleteButton);
+        }
+
+        // تعريف دالة لمعالجة عملية إرسال النموذج
+        function handleSubmit(event) {
+            event.preventDefault(); // منع السلوك الافتراضي للنموذج
+
+            // الحصول على قيم الحقول من النموذج
+            const name = document.getElementById("name").value;
+            const number = document.getElementById("number").value;
+            const specification = document.getElementById("specification").value;
+            const link = document.getElementById("link").value;
+            const image = document.getElementById("image").files[0];
+
+            // إضافة العنصر الجديد إلى القائمة
+            addItem(name, number, specification, link, image ? URL.createObjectURL(image) : null);
+
+            // إفراغ الحقول بعد الإضافة
+            document.getElementById("name").value = "";
+            document.getElementById("number").value = "";
+            document.getElementById("specification").value = "";
+            document.getElementById("link").value = "";
+            document.getElementById("image").value = "";
+        }
+
+        // تعريف دالة تحميل الصفحة
+        function loadPage() {
+            // تحميل البيانات المحفوظة إذا كانت متوفرة
+            fetch('data.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const items = data.split("\n");
+                    items.forEach(item => {
+                        const [name, number, specification, link, image] = item.split(", ");
+                        addItem(name, number, specification, link, image !== 'لا توجد صورة' ? image : null);
+                    });
+                });
+        }
+
+        // تعريف دالة لتعديل العنصر
+        function editItem(item) {
+            // كتابة الكود هنا
+            // يمكن استخدام النموذج الحالي لتعديل العنصر
+        }
+
+        // تعريف دالة لحذف العنصر
+        function deleteItem(item) {
+            item.remove();
+            // تحديث الملف النصي ليعكس التغييرات
+            updateLog();
+        }
+
+        // تعريف دالة لتحديث الملف النصي
+        function updateLog() {
+            const data = Array.from(myList.children).map(item => {
+                const name = item.querySelector("a").textContent.split(":")[0];
+                const number = item.querySelector("a").textContent.split(":")[1].split("(")[0].trim();
+                const specification = item.querySelector("a").textContent.split("(")[1].split(")")[0].trim();
+                const link = item.querySelector("a").href;
+                const imageSrc = item.querySelector("img") ? item.querySelector("img").src : null;
+                return `${name}, ${number}, ${specification}, ${link}, ${imageSrc ? imageSrc : 'لا توجد صورة'}`;
+            }).join("\n");
+
+            fetch('data.txt', { method: 'POST', body: data });
+        }
+
+        // تحميل الصفحة
+        loadPage();
+
+        // تعيين الدالة المعالجة لعملية إرسال النموذج
+        myForm.addEventListener("submit", handleSubmit);
+    </script>
+</body>
+</html>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/66110f0fa0c6737bd128e5fd/1hqpa5m7l';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+<form id="fileUploadForm">
+    <label for="fileUpload">اختر ملفًا:</label>
+    <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx">
+    <button type="submit">تحميل الملف</button>
+</form>
+<script>
+    const fileUploadForm = document.getElementById("fileUploadForm");
+
+    fileUploadForm.addEventListener("submit", (event) => {
+        event.preventDefault(); // منع سلوك النموذج الافتراضي
+
+        const fileInput = document.getElementById("fileUpload");
+        const file = fileInput.files[0]; // الحصول على الملف المختار
+
+        if (file) {
+            // إرسال الملف إلى الخادم هنا
+            // يمكن استخدام Fetch API أو XMLHttpRequest لإرسال الملف
+            // عادةً ما يتم استخدام طرق POST لتحميل الملفات إلى الخادم
+            // يجب أن يتم معالجة الطلب في الجانب الخادم بالطريقة المناسبة
+            console.log("تم تحميل الملف:", file.name);
+        } else {
+            console.log("لم يتم اختيار أي ملف.");
+        }
+    });
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع وتحميل الملفات</title>
+    <style>
+        /* تخصيص التنسيق */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .file-info {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>رفع وتحميل الملفات</h1>
+
+    <!-- نموذج رفع الملفات -->
+    <form id="fileUploadForm">
+        <label for="fileUpload">اختر ملفًا:</label>
+        <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx">
+        <button type="submit">تحميل الملف</button>
+    </form>
+
+    <!-- قائمة عرض الملفات -->
+    <div id="fileList"></div>
+
+    <script>
+        // تحديد النموذج وقائمة العرض
+        const fileUploadForm = document.getElementById("fileUploadForm");
+        const fileList = document.getElementById("fileList");
+
+        // إضافة معالج لعملية إرسال النموذج
+        fileUploadForm.addEventListener("submit", (event) => {
+            event.preventDefault(); // منع السلوك الافتراضي للنموذج
+
+            const fileInput = document.getElementById("fileUpload");
+            const file = fileInput.files[0]; // الحصول على الملف المختار
+
+            if (file) {
+                // إرسال الملف إلى الخادم هنا
+                // يمكن استخدام Fetch API أو XMLHttpRequest لإرسال الملف
+                // عادةً ما يتم استخدام طرق POST لتحميل الملفات إلى الخادم
+                // يجب أن يتم معالجة الطلب في الجانب الخادم بالطريقة المناسبة
+                console.log("تم تحميل الملف:", file.name);
+
+                // إضافة معلومات الملف إلى قائمة العرض
+                const fileInfo = document.createElement("div");
+                fileInfo.classList.add("file-info");
+                fileInfo.textContent = `اسم الملف: ${file.name}, حجم الملف: ${file.size} بايت`;
+                fileList.appendChild(fileInfo);
+            } else {
+                console.log("لم يتم اختيار أي ملف.");
+            }
+        });
+    </script>
+</body>
+</html>
